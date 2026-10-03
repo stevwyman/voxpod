@@ -24,16 +24,16 @@ The image is large (PyTorch, LuxTTS, and Whisper tiny). Give the Podman machine 
 podman volume create voxpod-data
 podman run --rm --name voxpod \
   --cap-add NET_ADMIN \
-  -p 127.0.0.1:8080:8080 \
+  -p 127.0.0.1:8085:8085 \
   -v voxpod-data:/data \
   localhost/voxpod
 ```
 
-Open http://127.0.0.1:8080 . The first start loads the model on CPU and can take a minute. The page says when it is ready.
+Open http://127.0.0.1:8085 . The first start loads the model on CPU and can take a minute. The page says when it is ready.
 
 Voice profiles stay in the `voxpod-data` volume across restarts.
 
-`--network none` cannot be used here: Podman drops published ports in that mode, so the page would be unreachable. `NET_ADMIN` lets the entrypoint reject new outbound traffic while still answering on port 8080. Set `VOXPOD_LOCK_NETWORK=0` to leave egress open.
+`--network none` cannot be used here: Podman drops published ports in that mode, so the page would be unreachable. `NET_ADMIN` lets the entrypoint reject new outbound traffic while still answering on port 8085. Set `VOXPOD_LOCK_NETWORK=0` to leave egress open.
 
 ## Use
 
