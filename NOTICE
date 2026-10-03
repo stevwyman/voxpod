@@ -1,0 +1,10 @@
+Voxpod
+
+This image bundles third-party models and code that stay on disk after the
+image is built:
+
+- LuxTTS (YatharthS/LuxTTS), Apache License 2.0
+  https://github.com/ysharma3501/LuxTTS
+- LinaCodec, pulled in by LuxTTS
+- openai/whisper-tiny, used only to transcribe a voice sample on this machine
+  https://huggingface.co/openai/whisper-tiny

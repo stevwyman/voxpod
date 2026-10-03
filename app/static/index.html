@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voxpod</title>
+  <script>
+    try {
+      if (localStorage.getItem("voxpod-theme") === "dark") {
+        document.documentElement.classList.add("pf-v6-theme-dark");
+      }
+    } catch (_err) {}
+  </script>
+  <link rel="stylesheet" href="/assets/patternfly/patternfly.min.css">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <div class="pf-v6-c-page">
+    <header class="pf-v6-c-masthead voxpod-header">
+      <a class="voxpod-brand" href="/">
+        <img src="/assets/voxpod-mark.png" alt="" width="40" height="40">
+        <span class="voxpod-brand__name">Voxpod</span>
+      </a>
+      <div class="voxpod-header__tools">
+        <span id="status" class="pf-v6-c-label pf-m-outline pf-m-compact pf-m-blue" role="status">
+          <span class="pf-v6-c-label__content">
+            <span id="status-text" class="pf-v6-c-label__text">Loading the speech model…</span>
+          </span>
+        </span>
+        <label class="pf-v6-c-switch" for="theme-toggle">
+          <input class="pf-v6-c-switch__input" type="checkbox" id="theme-toggle" role="switch">
+          <span class="pf-v6-c-switch__toggle">
+            <span class="pf-v6-c-switch__toggle-icon"></span>
+          </span>
+          <span class="pf-v6-c-switch__label" id="theme-label">Dark mode</span>
+        </label>
+      </div>
+    </header>
+
+    <main class="pf-v6-c-page__main-container" tabindex="-1">
+      <section class="pf-v6-c-page__main-section">
+        <div class="pf-v6-l-grid pf-m-gutter">
+          <div class="pf-v6-l-grid__item pf-m-12-col pf-m-6-col-on-lg">
+            <article class="pf-v6-c-card" aria-labelledby="voices-heading">
+              <div class="pf-v6-c-card__header">
+                <div class="pf-v6-c-card__header-main">
+                  <div class="pf-v6-c-card__title">
+                    <h2 class="pf-v6-c-card__title-text" id="voices-heading">Voices</h2>
+                  </div>
+                </div>
+              </div>
+              <div class="pf-v6-c-card__body">
+                <div class="pf-v6-c-content">
+                  <p>Record a short sample. Voxpod builds a voice profile on this machine and keeps it for later.</p>
+                </div>
+
+                <form class="pf-v6-c-form" id="voice-form">
+                  <div class="pf-v6-c-form__group">
+                    <div class="pf-v6-c-form__group-label">
+                      <label class="pf-v6-c-form__label" for="sample-language">
+                        <span class="pf-v6-c-form__label-text">Sample language</span>
+                      </label>
+                    </div>
+                    <div class="pf-v6-c-form__group-control">
+                      <div class="pf-v6-c-form-control">
+                        <select id="sample-language" aria-describedby="script">
+                          <option value="en" selected>English</option>
+                          <option value="zh">Chinese</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="voxpod-script">
+                    <p class="voxpod-script__label">Read this aloud</p>
+                    <p id="script">The quick brown fox jumps over the lazy dog. I am recording this sample so this computer can speak new sentences in my voice, with the same pace and tone.</p>
+                  </div>
+
+                  <div class="pf-v6-c-form__actions">
+                    <button id="record" class="pf-v6-c-button pf-m-secondary" type="button">
+                      <span class="pf-v6-c-button__text" data-label>Record</span>
+                    </button>
+                    <span id="timer" class="pf-v6-c-label pf-m-outline pf-m-compact" hidden>
+                      <span class="pf-v6-c-label__content">
+                        <span id="timer-text" class="pf-v6-c-label__text">0:00</span>
+                      </span>
+                    </span>
+                  </div>
+
+                  <div id="record-error" class="pf-v6-c-alert pf-m-danger pf-m-inline" role="alert" hidden>
+                    <div class="pf-v6-c-alert__icon">
+                      <i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>
+                    </div>
+                    <p class="pf-v6-c-alert__title"><span data-alert-text></span></p>
+                  </div>
+
+                  <div id="preview" hidden>
+                    <audio id="preview-audio" controls></audio>
+                    <div class="pf-v6-c-form__group">
+                      <div class="pf-v6-c-form__group-label">
+                        <label class="pf-v6-c-form__label" for="voice-name">
+                          <span class="pf-v6-c-form__label-text">Voice name</span>
+                        </label>
+                      </div>
+                      <div class="pf-v6-c-form__group-control">
+                        <div class="pf-v6-c-form-control">
+                          <input id="voice-name" type="text" maxlength="60" placeholder="My voice" autocomplete="off">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="pf-v6-c-check">
+                      <input class="pf-v6-c-check__input" type="checkbox" id="own-voice">
+                      <label class="pf-v6-c-check__label" for="own-voice">This is my voice, or I have permission to use it.</label>
+                    </div>
+                    <div class="pf-v6-c-form__actions">
+                      <button id="save-voice" class="pf-v6-c-button pf-m-secondary pf-m-progress" type="button">
+                        <span class="pf-v6-c-button__progress">
+                          <svg class="pf-v6-c-spinner pf-m-md" role="progressbar" aria-label="Saving" viewBox="0 0 100 100">
+                            <circle class="pf-v6-c-spinner__path" cx="50" cy="50" r="45" fill="none"></circle>
+                          </svg>
+                        </span>
+                        <span class="pf-v6-c-button__text" data-label>Save voice</span>
+                      </button>
+                      <button id="discard" class="pf-v6-c-button pf-m-secondary" type="button">Discard</button>
+                    </div>
+                  </div>
+
+                  <div class="pf-v6-c-form__actions">
+                    <button id="upload-trigger" class="pf-v6-c-button pf-m-secondary" type="button">
+                      <span class="pf-v6-c-button__icon pf-m-start">
+                        <i class="fas fa-upload" aria-hidden="true"></i>
+                      </span>
+                      Upload a recording
+                    </button>
+                    <input id="upload" class="voxpod-file-input" type="file" accept="audio/*" tabindex="-1" aria-hidden="true">
+                  </div>
+                </form>
+
+                <div id="voice-list"></div>
+                <audio id="sample-player" controls hidden></audio>
+              </div>
+            </article>
+          </div>
+
+          <div class="pf-v6-l-grid__item pf-m-12-col pf-m-6-col-on-lg">
+            <article class="pf-v6-c-card" aria-labelledby="speak-heading">
+              <div class="pf-v6-c-card__header">
+                <div class="pf-v6-c-card__header-main">
+                  <div class="pf-v6-c-card__title">
+                    <h2 class="pf-v6-c-card__title-text" id="speak-heading">Speak</h2>
+                  </div>
+                </div>
+              </div>
+              <div class="pf-v6-c-card__body">
+                <div class="pf-v6-c-content">
+                  <p>Choose a saved voice, type the words, and play them back. Nothing is sent off this computer.</p>
+                </div>
+
+                <form class="pf-v6-c-form" id="speak-form">
+                  <div class="pf-v6-c-form__group">
+                    <div class="pf-v6-c-form__group-label">
+                      <label class="pf-v6-c-form__label" for="voice-select">
+                        <span class="pf-v6-c-form__label-text">Voice</span>
+                      </label>
+                    </div>
+                    <div class="pf-v6-c-form__group-control">
+                      <div class="pf-v6-c-form-control">
+                        <select id="voice-select">
+                          <option value="">No voice yet</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="transcript" class="voxpod-note" hidden>
+                    <p class="voxpod-note__label">Heard in the sample</p>
+                    <p id="transcript-text"></p>
+                  </div>
+
+                  <div class="pf-v6-c-form__group">
+                    <div class="pf-v6-c-form__group-label">
+                      <label class="pf-v6-c-form__label" for="text">
+                        <span class="pf-v6-c-form__label-text">Text</span>
+                      </label>
+                    </div>
+                    <div class="pf-v6-c-form__group-control">
+                      <div class="pf-v6-c-form-control pf-m-textarea">
+                        <textarea id="text" rows="8" maxlength="500" placeholder="Type what this voice should say."></textarea>
+                      </div>
+                      <div class="pf-v6-c-form__helper-text">
+                        <div class="pf-v6-c-helper-text">
+                          <div class="pf-v6-c-helper-text__item">
+                            <span class="pf-v6-c-helper-text__item-text"><span id="count">0</span> / 500</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="voxpod-speak-row">
+                    <div class="pf-v6-c-form__group voxpod-speed">
+                      <div class="pf-v6-c-form__group-label">
+                        <label class="pf-v6-c-form__label" for="speed">
+                          <span class="pf-v6-c-form__label-text">Speed</span>
+                        </label>
+                      </div>
+                      <div class="pf-v6-c-form__group-control">
+                        <div class="pf-v6-c-form-control">
+                          <select id="speed">
+                            <option value="0.65">Slower</option>
+                            <option value="0.75" selected>Normal</option>
+                            <option value="0.95">Faster</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <button id="speak" class="pf-v6-c-button pf-m-secondary pf-m-progress" type="button">
+                      <span class="pf-v6-c-button__progress">
+                        <svg class="pf-v6-c-spinner pf-m-md" role="progressbar" aria-label="Speaking" viewBox="0 0 100 100">
+                          <circle class="pf-v6-c-spinner__path" cx="50" cy="50" r="45" fill="none"></circle>
+                        </svg>
+                      </span>
+                      <span class="pf-v6-c-button__text" data-label>Speak</span>
+                    </button>
+                  </div>
+
+                  <div id="speak-error" class="pf-v6-c-alert pf-m-danger pf-m-inline" role="alert" hidden>
+                    <div class="pf-v6-c-alert__icon">
+                      <i class="fas fa-fw fa-exclamation-circle" aria-hidden="true"></i>
+                    </div>
+                    <p class="pf-v6-c-alert__title"><span data-alert-text></span></p>
+                  </div>
+                  <audio id="result" controls hidden></audio>
+                </form>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/assets/app.js"></script>
+</body>
+</html>
