@@ -8,3 +8,7 @@ image is built:
 - LinaCodec, pulled in by LuxTTS
 - openai/whisper-tiny, used only to transcribe a voice sample on this machine
   https://huggingface.co/openai/whisper-tiny
+- libsndfile 1.2.2, built in the image for wav files, GNU LGPL 2.1
+  https://github.com/libsndfile/libsndfile
+- ffmpeg, a static build by John Van Sickle, used to convert recordings to wav.
+  That build is GNU GPL. https://johnvansickle.com/ffmpeg/

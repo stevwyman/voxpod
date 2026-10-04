@@ -4,8 +4,24 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import threading
 from pathlib import Path
+
+def _prepare_runtime() -> None:
+    """Create the writable directories a non-root, read-only container needs."""
+    for key, default in (
+        ("NUMBA_CACHE_DIR", "/tmp/numba-cache"),
+        ("XDG_CACHE_HOME", "/tmp/cache"),
+        ("MPLCONFIGDIR", "/tmp/matplotlib"),
+    ):
+        path = Path(os.environ.setdefault(key, default))
+        path.mkdir(parents=True, exist_ok=True)
+    data = Path(os.environ.get("VOXPOD_DATA", "/data"))
+    (data / "voices").mkdir(parents=True, exist_ok=True)
+
+
+_prepare_runtime()
 
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, Response
